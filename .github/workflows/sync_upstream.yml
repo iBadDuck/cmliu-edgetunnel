@@ -1,0 +1,21 @@
+name: 'Sync Upstream'
+on:
+  schedule:
+    - cron: '0 5 * * *'  # 每天凌晨5点（UTC时间）执行一次
+  workflow_dispatch:       # 允许手动触发此工作流
+permissions:
+  contents: write         # 赋予工作流写入仓库的权限
+jobs:
+  sync:
+    if: github.event.repository.fork == true  # 仅在fork仓库中运行
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Sync upstream changes
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
+        with:
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+          upstream_sync_repo: cmliu/edgetunnel  # 请修改为原始仓库
+          upstream_sync_branch: main                             # 原始仓库的分支
+          target_sync_branch: main                               # 你fork仓库的分支
